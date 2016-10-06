@@ -19,7 +19,7 @@
         "php-di/php-di": "^5.4"
     },
     "suggest": {
-        "php-di/php-di": "^5.4"
+        "php-di/php-di": "Alternative DI Container."
     },
     "autoload": {
         "psr-4": {
