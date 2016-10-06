@@ -1,0 +1,24 @@
+version: '2'
+services:
+  composer:
+    build: dockerfiles/composer
+    environment:
+      LOCAL_USER_ID: ${USER_ID}
+    volumes:
+      - .:/project
+      - ./storages/composer:/composer
+  codecept:
+    build: dockerfiles/codecept
+    environment:
+      LOCAL_USER_ID: ${USER_ID}
+    volumes:
+      - .:/project
+  phpcbf:
+    image: herloct/phpcbf:2.7.0
+    environment:
+      LOCAL_USER_ID: ${USER_ID}
+    volumes:
+      - .:/project
+volumes:
+  data:
+    driver: local
