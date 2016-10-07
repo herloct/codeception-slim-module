@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Herloct\Codeception\Lib\Connector;
 
+use Psr\Http\Message\UploadedFileInterface;
 use Slim\App;
 use Slim\Http\Environment;
 use Slim\Http\Headers;
 use Slim\Http\Request;
 use Slim\Http\RequestBody;
 use Slim\Http\Response;
+use Slim\Http\UploadedFile;
 use Slim\Http\Uri;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\BrowserKit\Request as BrowserKitRequest;
@@ -44,13 +46,21 @@ final class Slim extends Client
 
         $slimRequest = Request::createFromEnvironment($environment)
             ->withMethod($request->getMethod())
-            ->withUri($uri);
+            ->withUri($uri)
+            ->withUploadedFiles($this->convertFiles($request->getFiles()));
         if ($request->getContent() !== null) {
             $body = new RequestBody();
             $body->write($request->getContent());
             $slimRequest = $slimRequest
                 ->withBody($body);
         }
+
+        $parsed = [];
+        if ($request->getMethod() !== 'GET') {
+            $parsed = $request->getParameters();
+        }
+        $slimRequest = $slimRequest
+            ->withParsedBody($parsed);
 
         $slimHeaders = new Headers(['Content-Type' => 'text/html; charset=UTF-8']);
 
@@ -65,5 +75,26 @@ final class Slim extends Client
             $slimResponse->getStatusCode(),
             $slimResponse->getHeaders()
         );
+    }
+
+    private function convertFiles(array $files)
+    {
+        $fileObjects = [];
+        foreach ($files as $fieldName => $file) {
+            if ($file instanceof UploadedFileInterface) {
+                $fileObjects[$fieldName] = $file;
+            } elseif (!isset($file['tmp_name']) && !isset($file['name'])) {
+                $fileObjects[$fieldName] = $this->convertFiles($file);
+            } else {
+                $fileObjects[$fieldName] = new UploadedFile(
+                    $file['tmp_name'],
+                    $file['name'],
+                    $file['type'],
+                    $file['size'],
+                    $file['error']
+                );
+            }
+        }
+        return $fileObjects;
     }
 }
