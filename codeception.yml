@@ -12,14 +12,6 @@ settings:
 extensions:
     enabled:
         - Codeception\Extension\RunFailed
-modules:
-    config:
-        \Herloct\Codeception\Module\Slim:
-            container: tests/_data/container.php
-        REST:
-            depends: \Herloct\Codeception\Module\Slim
-            url: http://localhost
-            part: json
 coverage:
     enabled: true
     remote: false
