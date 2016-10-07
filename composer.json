@@ -27,12 +27,6 @@
         }
     },
     "autoload-dev": {
-        "psr-4": {
-            "Herloct\\Codeception\\": [
-                "src",
-                "tests/_support",
-                "tests/functional"
-            ]
-        }
+        "classmap": ["tests/_support", "tests/functional"]
     }
 }
