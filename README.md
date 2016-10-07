@@ -9,7 +9,7 @@ Based on [ZendExpressive Module](https://github.com/Codeception/Codeception/blob
 
 ```yaml
 \Herloct\Codeception\Module\Slim:
-  container: pat/to/container.php
+  container: path/to/container.php
 ```
 
 Minimum `container.app` contents.
