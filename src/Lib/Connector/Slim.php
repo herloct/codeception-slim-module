@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Herloct\Codeception\Lib\Connector;
 
 use Psr\Http\Message\UploadedFileInterface;

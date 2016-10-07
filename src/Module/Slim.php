@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace Herloct\Codeception\Module;
 
 use Codeception\Configuration;
