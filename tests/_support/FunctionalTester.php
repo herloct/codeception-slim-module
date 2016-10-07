@@ -1,5 +1,4 @@
 <?php
-namespace Herloct\Codeception;
 
 /**
  * Inherited Methods

@@ -1,5 +1,5 @@
 class_name: FunctionalTester
 modules:
     enabled:
-        - \Herloct\Codeception\Helper\Functional
+        - \Helper\Functional
         - REST
