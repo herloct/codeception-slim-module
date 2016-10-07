@@ -74,6 +74,17 @@ $builder->addDefinitions([
             }
         );
 
+        $app->get(
+            '/',
+            function (ServerRequestInterface $request, ResponseInterface $response) {
+                $body = $response->getBody();
+                $body->write(file_get_contents(__DIR__.'/template.phtml'));
+
+                return $response->withHeader('content-type', 'text/html')
+                    ->withBody($body);
+            }
+        );
+
         return $app;
     }
 ]);
