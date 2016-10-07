@@ -1,0 +1,3 @@
+[submodule "tests/functional/REST"]
+	path = tests/functional/REST
+	url = git@github.com:Naktibalda/codeception-rest-testcase.git
