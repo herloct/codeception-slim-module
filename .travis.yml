@@ -10,12 +10,16 @@ php:
 git:
   submodules: false
 
+before_install:
+  - composer self-update
+
+install:
+  - composer install
+
 # use sed to replace the SSH URL with the public URL, then init and update submodules
 before_script:
   - sed -i 's/git@github.com:/git:\/\/github.com\//' .gitmodules
   - git submodule update --init --recursive
-  - composer self-update
-  - composer install
 
 script:
   - vendor/bin/codecept run
