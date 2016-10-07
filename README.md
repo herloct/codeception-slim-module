@@ -44,6 +44,4 @@ return $builder->build();
 
 ## Todos
 
-* More sensible tests.
-* Add tests other than REST.
-* Add tests for uploading file.
+* Add more acceptance/functional tests other than REST.
