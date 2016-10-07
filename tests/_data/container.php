@@ -6,54 +6,73 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\App;
 
+function files_to_array(array $files)
+{
+    $result = [];
+    foreach ($files as $fieldName => $uploadedFile) {
+        /**
+         * @var $uploadedFile \Slim\Http\UploadedFile|array
+         */
+        if (is_array($uploadedFile)) {
+            $result[$fieldName] = files_to_array($uploadedFile);
+        } else {
+            $result[$fieldName] = [
+                'name' => $uploadedFile->getClientFilename(),
+                'tmp_name' => \Codeception\Util\ReflectionHelper::readPrivateProperty($uploadedFile, 'file'),
+                'size' => $uploadedFile->getSize(),
+                'type' => $uploadedFile->getClientMediaType(),
+                'error' => $uploadedFile->getError(),
+            ];
+        }
+    }
+    return $result;
+}
+
 $builder = new ContainerBuilder();
 
 $builder->addDefinitions([
     App::class => function (ContainerInterface $c) {
         $app = new App();
 
-        $app->get('/simple-get', function (ServerRequestInterface $request, ResponseInterface $response) {
-            $body = $response->getBody();
-            $body->write('Hello there');
+        $app->get(
+            '/api/ping',
+            function (ServerRequestInterface $request, ResponseInterface $response) {
+                $body = $response->getBody();
+                $body->write(json_encode([
+                    'ack' => time()
+                ]));
 
-            return $response->withBody($body);
-        });
+                return $response->withHeader('content-type', 'application/json')
+                    ->withBody($body);
+            }
+        );
 
-        $app->get('/complex-get', function (ServerRequestInterface $request, ResponseInterface $response) {
-            $body = $response->getBody();
-            $body->write(json_encode([
-                'query' => $request->getQueryParams(),
-                'headers' => $request->getHeaders()
-            ]));
+        $app->map(
+            ['GET', 'POST', 'PUT', 'DELETE'],
+            '/rest',
+            function (ServerRequestInterface $request, ResponseInterface $response) {
+                $tokenHeaderValue = null;
+                $tokenHeader = $request->getHeader('X-Auth-Token');
+                if (count($tokenHeader) > 0) {
+                    $tokenHeaderValue = $tokenHeader[0];
+                }
 
-            return $response->withHeader('content-type', 'application/json')
-                ->withBody($body);
-        });
+                $body = $response->getBody();
+                $body->write(json_encode([
+                    'requestMethod' => $request->getMethod(),
+                    'requestUri' => $request->getRequestTarget(),
+                    'queryParams' => $request->getQueryParams(),
+                    'formParams' => $request->getParsedBody(),
+                    'rawBody' => (string)$request->getBody(),
+                    'headers' => $request->getHeaders(),
+                    'X-Auth-Token' => $tokenHeaderValue,
+                    'files' => files_to_array($request->getUploadedFiles()),
+                ]));
 
-        $app->get('/complex-get/{id}/{name}', function (ServerRequestInterface $request, ResponseInterface $response) {
-            $body = $response->getBody();
-            $body->write(json_encode([
-                'attributes' => $request->getAttributes(),
-                'query' => $request->getQueryParams(),
-                'headers' => $request->getHeaders()
-            ]));
-
-            return $response->withHeader('content-type', 'application/json')
-                ->withBody($body);
-        });
-
-        $app->map(['POST', 'PUT', 'DELETE'], '/complex/{id}', function (ServerRequestInterface $request, ResponseInterface $response) {
-            $body = $response->getBody();
-            $body->write(json_encode([
-                'attributes' => $request->getAttributes(),
-                'query' => $request->getQueryParams(),
-                'headers' => $request->getHeaders(),
-                'parsed_body' => $request->getParsedBody()
-            ]));
-
-            return $response->withHeader('content-type', 'application/json')
-                ->withBody($body);
-        });
+                return $response->withHeader('content-type', 'application/json')
+                    ->withBody($body);
+            }
+        );
 
         return $app;
     }
