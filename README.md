@@ -1,6 +1,6 @@
 # Codeception Slim Module
 
-This module allows you to run tests inside Slim 3 Framework.  
+This module allows you to run tests inside Slim 3 Microframework.  
 Based on [ZendExpressive Module](https://github.com/Codeception/Codeception/blob/2.2/src/Codeception/Module/ZendExpressive.php).
 
 ## Config
