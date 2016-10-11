@@ -14,7 +14,7 @@ Based on [ZendExpressive Module](https://github.com/Codeception/Codeception/blob
   container: path/to/container.php
 ```
 
-Minimum `container.app` contents.
+Minimum `container.php` contents using [PHP-DI](http://php-di.org/).
 
 ```php
 require __DIR__.'/vendor/autoload.php';
