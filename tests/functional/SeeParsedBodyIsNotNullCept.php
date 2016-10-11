@@ -1,7 +1,12 @@
 <?php 
 $I = new FunctionalTester($scenario);
+
+$data = ['testing' => '123'];
 $I->wantTo('test that the parsed request body is returned in tact');
 $I->haveHttpHeader('content-type', 'application/json');
-$I->sendPOST('/echo-parsed-body', ['testing' => '123']);
+$I->sendPOST('/rest', $data);
 $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
-$I->seeResponseContains('123');
+$I->seeResponseContainsJson([
+    'formParams' => $data,
+    'rawBody' => json_encode($data)
+]);
