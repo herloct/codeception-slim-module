@@ -85,6 +85,15 @@ $builder->addDefinitions([
             }
         );
 
+        $app->post(
+            '/echo-parsed-body',
+            function (ServerRequestInterface $request, ResponseInterface $response) {
+                $body = $request->getParsedBody();
+
+                return $response->withJson($body);
+            }
+        );
+
         return $app;
     }
 ]);

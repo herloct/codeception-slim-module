@@ -57,8 +57,12 @@ final class Slim extends Client
         if ($request->getMethod() !== 'GET') {
             $parsed = $request->getParameters();
         }
-        $slimRequest = $slimRequest
-            ->withParsedBody($parsed);
+
+        // make sure we do not overwrite a request with a parsed body
+        if (!$slimRequest->getParsedBody()) {
+            $slimRequest = $slimRequest
+              ->withParsedBody($parsed);
+        }
 
         $slimHeaders = new Headers(['Content-Type' => 'text/html; charset=UTF-8']);
 
