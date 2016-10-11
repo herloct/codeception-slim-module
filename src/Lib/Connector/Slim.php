@@ -59,7 +59,7 @@ final class Slim extends Client
         }
 
         // make sure we do not overwrite a request with a parsed body
-        if ($parsed !== null && !$slimRequest->getParsedBody()) {
+        if (!$slimRequest->getParsedBody()) {
             $slimRequest = $slimRequest
               ->withParsedBody($parsed);
         }
