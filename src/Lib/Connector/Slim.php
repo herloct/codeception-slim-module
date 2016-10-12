@@ -5,10 +5,9 @@ namespace Herloct\Codeception\Lib\Connector;
 use Psr\Http\Message\UploadedFileInterface;
 use Slim\App;
 use Slim\Http\Environment;
-use Slim\Http\Headers;
 use Slim\Http\Request;
 use Slim\Http\RequestBody;
-use Slim\Http\Response;
+use Slim\Http\Stream;
 use Slim\Http\UploadedFile;
 use Slim\Http\Uri;
 use Symfony\Component\BrowserKit\Client;
@@ -42,10 +41,13 @@ final class Slim extends Client
         $environment = Environment::mock($request->getServer());
         $uri = Uri::createFromString($request->getUri());
 
+        $container = $this->app->getContainer();
+
         $slimRequest = Request::createFromEnvironment($environment)
             ->withMethod($request->getMethod())
             ->withUri($uri)
             ->withUploadedFiles($this->convertFiles($request->getFiles()));
+
         if ($request->getContent() !== null) {
             $body = new RequestBody();
             $body->write($request->getContent());
@@ -64,12 +66,11 @@ final class Slim extends Client
               ->withParsedBody($parsed);
         }
 
-        $slimHeaders = new Headers(['Content-Type' => 'text/html; charset=UTF-8']);
-
         $slimResponse = $this->app->process(
             $slimRequest,
-            (new Response(200, $slimHeaders))
-                ->withProtocolVersion($this->app->getContainer()->get('settings')['httpVersion'])
+            $container->get('response')
+              ->withProtocolVersion($container->get('settings')['httpVersion'])
+              ->withBody(new Stream(fopen('php://temp', 'w+')))
         );
 
         return new BrowserKitResponse(
