@@ -5,7 +5,8 @@ namespace Herloct\Codeception\Lib\Connector;
 use Psr\Http\Message\UploadedFileInterface;
 use Slim\App;
 use Slim\Http\Environment;
-use Slim\Http\Request;
+use Slim\Http\Headers;
+use Slim\Http\Cookies;
 use Slim\Http\RequestBody;
 use Slim\Http\Stream;
 use Slim\Http\UploadedFile;
@@ -38,15 +39,22 @@ final class Slim extends Client
      */
     protected function doRequest($request)
     {
-        $environment = Environment::mock($request->getServer());
-        $uri = Uri::createFromString($request->getUri());
-
         $container = $this->app->getContainer();
+        $environment = Environment::mock($request->getServer());
 
-        $slimRequest = Request::createFromEnvironment($environment)
-            ->withMethod($request->getMethod())
-            ->withUri($uri)
-            ->withUploadedFiles($this->convertFiles($request->getFiles()));
+        $uri = Uri::createFromString($request->getUri());
+        $headers = Headers::createFromEnvironment($environment);
+        $cookies = Cookies::parseHeader($headers->get('Cookie', []));
+
+        $slimRequest = $container->get('request');
+        $slimRequest = $slimRequest->withMethod($request->getMethod())
+          ->withUri($uri)
+          ->withUploadedFiles($this->convertFiles($request->getFiles()))
+          ->withCookieParams($cookies);
+
+        foreach ($headers->keys() as $key) {
+            $slimRequest = $slimRequest->withHeader($key, $headers->get($key));
+        }
 
         if ($request->getContent() !== null) {
             $body = new RequestBody();

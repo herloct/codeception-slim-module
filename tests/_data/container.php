@@ -5,6 +5,7 @@ use Interop\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\App;
+use Slim\Http\Headers;
 
 function files_to_array(array $files)
 {
@@ -28,11 +29,29 @@ function files_to_array(array $files)
     return $result;
 }
 
+class NewRequest extends Slim\Http\Request {}
+
+class NewResponse extends Slim\Http\Response {}
+
 $builder = new ContainerBuilder();
 
 $builder->addDefinitions([
     App::class => function (ContainerInterface $c) {
-        $app = new App();
+
+        $container = new Slim\Container();
+
+        $container['response'] = function ($container) {
+            $headers = new Headers(['Content-Type' => 'text/html; charset=UTF-8']);
+            $response = new NewResponse(200, $headers);
+
+            return $response->withProtocolVersion($container->get('settings')['httpVersion']);
+        };
+
+        $container['request'] = function ($container) {
+            return NewRequest::createFromEnvironment($container->get('environment'));
+        };
+
+        $app = new App($container);
 
         $app->get(
             '/api/ping',
@@ -57,6 +76,9 @@ $builder->addDefinitions([
                     $tokenHeaderValue = $tokenHeader[0];
                 }
 
+                $responseClass = get_class($response);
+                $requestClass  = get_class($request);
+
                 $body = $response->getBody();
                 $body->write(json_encode([
                     'requestMethod' => $request->getMethod(),
@@ -67,6 +89,8 @@ $builder->addDefinitions([
                     'headers' => $request->getHeaders(),
                     'X-Auth-Token' => $tokenHeaderValue,
                     'files' => files_to_array($request->getUploadedFiles()),
+                    'responseClass' => $responseClass,
+                    'requestClass' => $requestClass,
                 ]));
 
                 return $response->withHeader('content-type', 'application/json')
