@@ -79,6 +79,12 @@ final class Slim extends Client
         );
     }
 
+    /**
+     * Convert to PSR-7's UploadedFileInterface
+     *
+     * @param array $files
+     * @return array
+     */
     private function convertFiles(array $files)
     {
         $fileObjects = [];
