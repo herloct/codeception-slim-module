@@ -2,6 +2,7 @@
 
 namespace Herloct\Codeception\Lib\Connector;
 
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Slim\App;
 use Slim\Http\Environment;
@@ -39,6 +40,31 @@ final class Slim extends Client
      */
     protected function doRequest($request)
     {
+        $slimRequest = $this->convertRequest($request);
+
+        $slimHeaders = new Headers(['Content-Type' => 'text/html; charset=UTF-8']);
+
+        $slimResponse = $this->app->process(
+            $slimRequest,
+            (new Response(200, $slimHeaders))
+                ->withProtocolVersion($this->app->getContainer()->get('settings')['httpVersion'])
+        );
+
+        return new BrowserKitResponse(
+            (string) $slimResponse->getBody(),
+            $slimResponse->getStatusCode(),
+            $slimResponse->getHeaders()
+        );
+    }
+
+    /**
+     * Convert to PSR-7's ServerRequestInterface.
+     *
+     * @param BrowserKitRequest $request
+     * @return ServerRequestInterface
+     */
+    private function convertRequest(BrowserKitRequest $request): ServerRequestInterface
+    {
         $environment = Environment::mock($request->getServer());
         $uri = Uri::createFromString($request->getUri());
 
@@ -61,22 +87,10 @@ final class Slim extends Client
         // make sure we do not overwrite a request with a parsed body
         if (!$slimRequest->getParsedBody()) {
             $slimRequest = $slimRequest
-              ->withParsedBody($parsed);
+                ->withParsedBody($parsed);
         }
 
-        $slimHeaders = new Headers(['Content-Type' => 'text/html; charset=UTF-8']);
-
-        $slimResponse = $this->app->process(
-            $slimRequest,
-            (new Response(200, $slimHeaders))
-                ->withProtocolVersion($this->app->getContainer()->get('settings')['httpVersion'])
-        );
-
-        return new BrowserKitResponse(
-            (string) $slimResponse->getBody(),
-            $slimResponse->getStatusCode(),
-            $slimResponse->getHeaders()
-        );
+        return $slimRequest;
     }
 
     /**
