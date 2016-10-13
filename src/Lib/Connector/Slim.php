@@ -7,9 +7,9 @@ use Psr\Http\Message\UploadedFileInterface;
 use Slim\App;
 use Slim\Http\Environment;
 use Slim\Http\Headers;
-use Slim\Http\Request;
+use Slim\Http\Cookies;
 use Slim\Http\RequestBody;
-use Slim\Http\Response;
+use Slim\Http\Stream;
 use Slim\Http\UploadedFile;
 use Slim\Http\Uri;
 use Symfony\Component\BrowserKit\Client;
@@ -41,13 +41,12 @@ final class Slim extends Client
     protected function doRequest($request)
     {
         $slimRequest = $this->convertRequest($request);
-
-        $slimHeaders = new Headers(['Content-Type' => 'text/html; charset=UTF-8']);
+        $container = $this->app->getContainer();
 
         $slimResponse = $this->app->process(
             $slimRequest,
-            (new Response(200, $slimHeaders))
-                ->withProtocolVersion($this->app->getContainer()->get('settings')['httpVersion'])
+            $container->get('response')
+              ->withBody(new Stream(fopen('php://temp', 'w+')))
         );
 
         return new BrowserKitResponse(
@@ -66,12 +65,22 @@ final class Slim extends Client
     private function convertRequest(BrowserKitRequest $request)
     {
         $environment = Environment::mock($request->getServer());
-        $uri = Uri::createFromString($request->getUri());
+        $container = $this->app->getContainer();
 
-        $slimRequest = Request::createFromEnvironment($environment)
-            ->withMethod($request->getMethod())
-            ->withUri($uri)
-            ->withUploadedFiles($this->convertFiles($request->getFiles()));
+        $uri = Uri::createFromString($request->getUri());
+        $headers = Headers::createFromEnvironment($environment);
+        $cookies = Cookies::parseHeader($headers->get('Cookie', []));
+
+        $slimRequest = $container->get('request');
+        $slimRequest = $slimRequest->withMethod($request->getMethod())
+          ->withUri($uri)
+          ->withUploadedFiles($this->convertFiles($request->getFiles()))
+          ->withCookieParams($cookies);
+
+        foreach ($headers->keys() as $key) {
+            $slimRequest = $slimRequest->withHeader($key, $headers->get($key));
+        }
+
         if ($request->getContent() !== null) {
             $body = new RequestBody();
             $body->write($request->getContent());
