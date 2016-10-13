@@ -2,6 +2,7 @@
 
 namespace Herloct\Codeception\Lib\Connector;
 
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Slim\App;
@@ -41,13 +42,16 @@ final class Slim extends Client
     protected function doRequest($request)
     {
         $slimRequest = $this->convertRequest($request);
+
         $container = $this->app->getContainer();
 
-        $slimResponse = $this->app->process(
-            $slimRequest,
-            $container->get('response')
-              ->withBody(new Stream(fopen('php://temp', 'w+')))
-        );
+        /* @var $slimResponse ResponseInterface */
+        $slimResponse = $container->get('response');
+
+        // reset body stream
+        $slimResponse = $slimResponse->withBody(new Stream(fopen('php://temp', 'w+')));
+
+        $slimResponse = $this->app->process($slimRequest, $slimResponse);
 
         return new BrowserKitResponse(
             (string) $slimResponse->getBody(),
@@ -65,13 +69,15 @@ final class Slim extends Client
     private function convertRequest(BrowserKitRequest $request)
     {
         $environment = Environment::mock($request->getServer());
-        $container = $this->app->getContainer();
-
         $uri = Uri::createFromString($request->getUri());
         $headers = Headers::createFromEnvironment($environment);
         $cookies = Cookies::parseHeader($headers->get('Cookie', []));
 
+        $container = $this->app->getContainer();
+
+        /* @var $slimRequest ServerRequestInterface */
         $slimRequest = $container->get('request');
+
         $slimRequest = $slimRequest->withMethod($request->getMethod())
           ->withUri($uri)
           ->withUploadedFiles($this->convertFiles($request->getFiles()))
