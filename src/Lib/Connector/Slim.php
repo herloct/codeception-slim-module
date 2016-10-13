@@ -63,7 +63,7 @@ final class Slim extends Client
      * @param BrowserKitRequest $request
      * @return ServerRequestInterface
      */
-    private function convertRequest(BrowserKitRequest $request): ServerRequestInterface
+    private function convertRequest(BrowserKitRequest $request)
     {
         $environment = Environment::mock($request->getServer());
         $uri = Uri::createFromString($request->getUri());
