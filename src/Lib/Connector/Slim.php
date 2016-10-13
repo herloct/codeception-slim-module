@@ -69,7 +69,6 @@ final class Slim extends Client
         $slimResponse = $this->app->process(
             $slimRequest,
             $container->get('response')
-              ->withProtocolVersion($container->get('settings')['httpVersion'])
               ->withBody(new Stream(fopen('php://temp', 'w+')))
         );
 
