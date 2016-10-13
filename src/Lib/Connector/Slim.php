@@ -2,6 +2,7 @@
 
 namespace Herloct\Codeception\Lib\Connector;
 
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Slim\App;
 use Slim\Http\Environment;
@@ -39,8 +40,32 @@ final class Slim extends Client
      */
     protected function doRequest($request)
     {
+        $slimRequest = $this->convertRequest($request);
         $container = $this->app->getContainer();
+
+        $slimResponse = $this->app->process(
+            $slimRequest,
+            $container->get('response')
+              ->withBody(new Stream(fopen('php://temp', 'w+')))
+        );
+
+        return new BrowserKitResponse(
+            (string) $slimResponse->getBody(),
+            $slimResponse->getStatusCode(),
+            $slimResponse->getHeaders()
+        );
+    }
+
+    /**
+     * Convert to PSR-7's ServerRequestInterface.
+     *
+     * @param BrowserKitRequest $request
+     * @return ServerRequestInterface
+     */
+    private function convertRequest(BrowserKitRequest $request)
+    {
         $environment = Environment::mock($request->getServer());
+        $container = $this->app->getContainer();
 
         $uri = Uri::createFromString($request->getUri());
         $headers = Headers::createFromEnvironment($environment);
@@ -71,22 +96,18 @@ final class Slim extends Client
         // make sure we do not overwrite a request with a parsed body
         if (!$slimRequest->getParsedBody()) {
             $slimRequest = $slimRequest
-              ->withParsedBody($parsed);
+                ->withParsedBody($parsed);
         }
 
-        $slimResponse = $this->app->process(
-            $slimRequest,
-            $container->get('response')
-              ->withBody(new Stream(fopen('php://temp', 'w+')))
-        );
-
-        return new BrowserKitResponse(
-            (string) $slimResponse->getBody(),
-            $slimResponse->getStatusCode(),
-            $slimResponse->getHeaders()
-        );
+        return $slimRequest;
     }
 
+    /**
+     * Convert to PSR-7's UploadedFileInterface.
+     *
+     * @param array $files
+     * @return array
+     */
     private function convertFiles(array $files)
     {
         $fileObjects = [];
