@@ -33,25 +33,20 @@ class NewRequest extends Slim\Http\Request {}
 
 class NewResponse extends Slim\Http\Response {}
 
-$builder = new ContainerBuilder();
+$container = new Slim\Container([
+    'request' => function (ContainerInterface $c) {
+        return NewRequest::createFromEnvironment($c->get('environment'));
+    },
 
-$builder->addDefinitions([
+    'response' => function (ContainerInterface $c) {
+        $headers = new Headers(['Content-Type' => 'text/html; charset=UTF-8']);
+        $response = new NewResponse(200, $headers);
+
+        return $response->withProtocolVersion($c->get('settings')['httpVersion']);
+    },
+
     App::class => function (ContainerInterface $c) {
-
-        $container = new Slim\Container();
-
-        $container['response'] = function ($container) {
-            $headers = new Headers(['Content-Type' => 'text/html; charset=UTF-8']);
-            $response = new NewResponse(200, $headers);
-
-            return $response->withProtocolVersion($container->get('settings')['httpVersion']);
-        };
-
-        $container['request'] = function ($container) {
-            return NewRequest::createFromEnvironment($container->get('environment'));
-        };
-
-        $app = new App($container);
+        $app = new App($c);
 
         $app->get(
             '/api/ping',
@@ -113,4 +108,4 @@ $builder->addDefinitions([
     }
 ]);
 
-return $builder->build();
+return $container;
