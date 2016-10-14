@@ -1,7 +1,7 @@
 version: '2'
 services:
   composer:
-    build: dockerfiles/composer
+    image: herloct/composer:7.0.11
     environment:
       LOCAL_USER_ID: ${USER_ID}
     volumes:
