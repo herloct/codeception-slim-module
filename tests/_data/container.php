@@ -1,23 +1,27 @@
 <?php
 
-use DI\ContainerBuilder;
+use Codeception\Util\ReflectionHelper;
 use Interop\Container\ContainerInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
+use Slim\Container;
 use Slim\Http\Headers;
+use Slim\Http\Request;
+use Slim\Http\Response;
+use Slim\Http\UploadedFile;
 
 function files_to_array(array $files)
 {
     $result = [];
     foreach ($files as $fieldName => $uploadedFile) {
-        /* @var $uploadedFile \Slim\Http\UploadedFile|array */
+        /* @var $uploadedFile UploadedFile|array */
         if (is_array($uploadedFile)) {
             $result[$fieldName] = files_to_array($uploadedFile);
         } else {
             $result[$fieldName] = [
                 'name' => $uploadedFile->getClientFilename(),
-                'tmp_name' => \Codeception\Util\ReflectionHelper::readPrivateProperty($uploadedFile, 'file'),
+                'tmp_name' => ReflectionHelper::readPrivateProperty($uploadedFile, 'file'),
                 'size' => $uploadedFile->getSize(),
                 'type' => $uploadedFile->getClientMediaType(),
                 'error' => $uploadedFile->getError(),
@@ -28,11 +32,11 @@ function files_to_array(array $files)
     return $result;
 }
 
-class NewRequest extends Slim\Http\Request {}
+class NewRequest extends Request {}
 
-class NewResponse extends Slim\Http\Response {}
+class NewResponse extends Response {}
 
-$container = new Slim\Container([
+$container = new Container([
     'request' => function (ContainerInterface $c) {
         return NewRequest::createFromEnvironment($c->get('environment'));
     },
