@@ -17,20 +17,18 @@ Based on [ZendExpressive Module](https://github.com/Codeception/Codeception/blob
   container: path/to/container.php
 ```
 
-Minimum `container.php` contents using [PHP-DI](http://php-di.org/).
+Minimum `container.php` contents.
 
 ```php
 require __DIR__.'/vendor/autoload.php';
 
-use DI\ContainerBuilder;
 use Interop\Container\ContainerInterface;
 use Slim\App;
+use Slim\Container;
 
-$builder = new ContainerBuilder();
-
-$builder->addDefinitions([
+$container = new Container([
     App::class => function (ContainerInterface $c) {
-        $app = new App();
+        $app = new App($c);
 
         // routes and middlewares here
 
@@ -38,7 +36,7 @@ $builder->addDefinitions([
     }
 ]);
 
-return $builder->build();
+return $container;
 ```
 
 ## API
