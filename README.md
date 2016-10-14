@@ -1,6 +1,9 @@
 # Codeception Slim Module
 
+[![Latest Stable Version](https://poser.pugx.org/herloct/codeception-slim-module/v/stable)](https://packagist.org/packages/herloct/codeception-slim-module)
+[![Latest Unstable Version](https://poser.pugx.org/herloct/codeception-slim-module/v/unstable)](https://packagist.org/packages/herloct/codeception-slim-module)
 [![Build Status](https://travis-ci.org/herloct/codeception-slim-module.svg?branch=master)](https://travis-ci.org/herloct/codeception-slim-module)
+[![License](https://poser.pugx.org/herloct/codeception-slim-module/license)](https://packagist.org/packages/herloct/codeception-slim-module)
 
 This module allows you to run tests inside Slim 3 Microframework.  
 Based on [ZendExpressive Module](https://github.com/Codeception/Codeception/blob/2.2/src/Codeception/Module/ZendExpressive.php).
