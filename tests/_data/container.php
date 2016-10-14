@@ -11,9 +11,7 @@ function files_to_array(array $files)
 {
     $result = [];
     foreach ($files as $fieldName => $uploadedFile) {
-        /**
-         * @var $uploadedFile \Slim\Http\UploadedFile|array
-         */
+        /* @var $uploadedFile \Slim\Http\UploadedFile|array */
         if (is_array($uploadedFile)) {
             $result[$fieldName] = files_to_array($uploadedFile);
         } else {
@@ -26,6 +24,7 @@ function files_to_array(array $files)
             ];
         }
     }
+
     return $result;
 }
 
