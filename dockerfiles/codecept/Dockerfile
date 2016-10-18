@@ -1,4 +1,4 @@
-FROM php:7.0.11-alpine
+FROM php:7.0.12-alpine
 
 MAINTAINER herloct <herloct@gmail.com>
 
