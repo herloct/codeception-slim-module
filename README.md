@@ -1,13 +1,30 @@
 # Codeception Slim Module
 
-[![Latest Stable Version](https://poser.pugx.org/herloct/codeception-slim-module/v/stable)](https://packagist.org/packages/herloct/codeception-slim-module)
-[![Latest Unstable Version](https://poser.pugx.org/herloct/codeception-slim-module/v/unstable)](https://packagist.org/packages/herloct/codeception-slim-module)
-[![Build Status](https://travis-ci.org/herloct/codeception-slim-module.svg?branch=master)](https://travis-ci.org/herloct/codeception-slim-module)
-[![License](https://poser.pugx.org/herloct/codeception-slim-module/license)](https://packagist.org/packages/herloct/codeception-slim-module)
+[![Master Build Status](https://travis-ci.org/herloct/codeception-slim-module.svg?branch=1.0.4)](https://travis-ci.org/herloct/codeception-slim-module)
+[![Packagist Stable Version](https://img.shields.io/packagist/v/herloct/codeception-slim-module.svg)](https://packagist.org/packages/herloct/codeception-slim-module)
+[![Packagist License](https://img.shields.io/packagist/l/herloct/codeception-slim-module.svg)](https://packagist.org/packages/herloct/codeception-slim-module)
 [![Libraries.io for GitHub](https://img.shields.io/librariesio/github/herloct/codeception-slim-module.svg)](https://libraries.io/github/herloct/codeception-slim-module)
 
-This module allows you to run tests inside Slim 3 Microframework.  
+This module allows you to run tests inside [Slim 3 Microframework](http://www.slimframework.com/).  
 Based on [ZendExpressive Module](https://github.com/Codeception/Codeception/blob/2.2/src/Codeception/Module/ZendExpressive.php).
+
+## Install
+
+Via commandline:
+
+```shell
+composer require --dev herloct/codeception-slim-module
+```
+
+Via `composer.json`:
+
+```json
+{
+  "require-dev": {
+    "herloct/codeception-slim-module": "^1.0"
+  }
+}
+```
 
 ## Config
 
@@ -44,7 +61,7 @@ return $container;
 
 * application -  instance of `\Slim\App`
 * container - instance of `\Interop\Container\ContainerInterface`
-* client - BrowserKit client
+* client - [BrowserKit](http://symfony.com/doc/current/components/browser_kit.html) client
 
 ## Todos
 
