@@ -57,6 +57,8 @@ $container = new Container([
 return $container;
 ```
 
+You could use this [Sample Project](https://github.com/herloct/codeception-slim-module-example) as a reference.
+
 ## API
 
 * application -  instance of `\Slim\App`
