@@ -1,6 +1,6 @@
 # Codeception Slim Module
 
-[![Master Build Status](https://travis-ci.org/herloct/codeception-slim-module.svg?branch=1.1.0)](https://travis-ci.org/herloct/codeception-slim-module)
+[![Master Build Status](https://travis-ci.org/herloct/codeception-slim-module.svg?branch=master)](https://travis-ci.org/herloct/codeception-slim-module)
 [![Packagist Stable Version](https://img.shields.io/packagist/v/herloct/codeception-slim-module.svg)](https://packagist.org/packages/herloct/codeception-slim-module)
 [![Packagist License](https://img.shields.io/packagist/l/herloct/codeception-slim-module.svg)](https://packagist.org/packages/herloct/codeception-slim-module)
 [![Libraries.io for GitHub](https://img.shields.io/librariesio/github/herloct/codeception-slim-module.svg)](https://libraries.io/github/herloct/codeception-slim-module)
