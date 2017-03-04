@@ -79,7 +79,7 @@ You could use this [Sample Project](https://github.com/herloct/codeception-slim-
 ## API
 
 * app -  instance of `\Slim\App`
-* container - instance of `\Interop\Container\ContainerInterface`
+* container - instance of `\Psr\Container\ContainerInterface`
 * client - [BrowserKit](http://symfony.com/doc/current/components/browser_kit.html) client
 
 ## Todos
