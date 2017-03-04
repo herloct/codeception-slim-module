@@ -28,17 +28,31 @@ Via `composer.json`:
 
 ## Config
 
-Put this on your `codeception.yml`'s `modules.config`, or on your `tests/functional.suite.yml`'s 
-`modules.enabled`.
+Put this on your `codeception.yml`
 
 ```yaml
-\Herloct\Codeception\Module\Slim:
-  container: path/to/container.php
+modules:
+  config:
+    \Herloct\Codeception\Module\Slim:
+      container: path/to/container.php
+    REST:
+      depends: \Herloct\Codeception\Module\Slim
 ```
 
-The `container` properties is a relative path to file which returns your App's Container.
+Or on your `tests/functional.suite.yml`
 
-Minimum `container.php` contents.
+```yaml
+modules:
+  enabled:
+    - \Helper\Functional
+    - \Herloct\Codeception\Module\Slim:
+        container: path/to/container.php
+    - REST:
+        depends: \Herloct\Codeception\Module\Slim
+```
+
+The `container` properties is a relative path to file which returns your App's Container.  
+Here is the minimum `container.php` contents.
 
 ```php
 require __DIR__.'/vendor/autoload.php';
