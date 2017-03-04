@@ -6,7 +6,7 @@ use Codeception\Configuration;
 use Codeception\Lib\Framework;
 use Codeception\TestInterface;
 use Herloct\Codeception\Lib\Connector\Slim as Connector;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use Slim\App;
 
 final class Slim extends Framework
