@@ -1,24 +1,20 @@
-version: '2'
+version: '3'
 services:
   composer:
-    image: herloct/composer:7.0.12
-    environment:
-      LOCAL_USER_ID: ${USER_ID}
+    image: herloct/composer:1.3.2-php5.6
     volumes:
       - .:/project
-      - ./storages/composer:/composer
+
   codecept:
-    build: dockerfiles/codecept
-    environment:
-      LOCAL_USER_ID: ${USER_ID}
+    image: php:5.6.30
+    working_dir: /project
+    entrypoint:
+      - php
+      - vendor/bin/codecept
     volumes:
       - .:/project
+
   phpcbf:
-    image: herloct/phpcbf:2.7.0
-    environment:
-      LOCAL_USER_ID: ${USER_ID}
+    image: herloct/phpcbf:2.8.1
     volumes:
       - .:/project
-volumes:
-  data:
-    driver: local
